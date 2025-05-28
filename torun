@@ -15,13 +15,14 @@ python -m scripts.self_explorer `
 
 docker build -t navmind-agent .
 
-docker run --rm -it `
-    --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\checklist.apk:/mnt/apks/mounted_app.apk:ro" `
-    --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\agent_persistent_storage:/agent/apps" `
-    navmind-agent `
-    "/mnt/apks/mounted_app.apk" `
-    "Create a Task to 'Buy Milk'" `
-    "Gemini" `
+docker run --rm -it \
+    --device /dev/kvm \
+    --volume $HOME/YOUR_APK_NAME.apk:/mnt/apks/mounted_app.apk:ro \
+    --volume $HOME/agent_persistent_storage:/agent/apps \
+    navmind-agent:latest \
+    "/mnt/apks/mounted_app.apk" \
+    "Create a Task to 'Buy Milk'" \
+    "Gemini" \
     "AIzaSyAX5wUhomG8Ew7z5DWrHgauF-uqzTtIKoQ"
 
 
@@ -48,3 +49,59 @@ Breakdown of the docker run command parameters to customize for each run:
 
 7.         "YourApiKeyOrNone"
         Customize this if needed. Provide your API key here if you want to override what's in config.yaml or if the key is required for the chosen model. If the key is in config.yaml or not needed, use "None". Be careful about pasting API keys directly into shared terminal histories.
+
+
+
+
+**Before you run this, make sure:**
+
+1.  You have successfully built the `navmind-agent:latest` Docker image **directly on your DigitalOcean droplet** using the steps previously discussed (cloning your repo, then `docker build -t navmind-agent .`).
+2.  You have **KVM set up and verified** (`kvm-ok` gives a positive result) on your droplet.
+3.  You have an APK file on your droplet. Let's assume for this example its name is `your_app.apk` and you've placed it in your user's home directory (e.g., `/root/your_app.apk` if you are logged in as `root`, or `/home/yourusername/your_app.apk` if you are logged in as a regular user).
+4.  You have created the persistent storage directory: `mkdir ~/agent_persistent_storage` (or the equivalent path like `/root/agent_persistent_storage`).
+
+
+```bash
+docker run --rm -it \
+    --device /dev/kvm \
+    --volume ~/YOUR_ACTUAL_APK_FILENAME.apk:/mnt/apks/mounted_app.apk:ro \
+    --volume ~/agent_persistent_storage:/agent/apps \
+    navmind-agent:latest \
+    "/mnt/apks/mounted_app.apk" \
+    "Create a Task to 'Buy Milk'" \
+    "Gemini" \
+    "AIzaSyAX5wUhomG8Ew7z5DWrHgauF-uqzTtIKoQ"
+```
+
+**Explanation of the parts you need to verify/replace:**
+
+*   `--device /dev/kvm`: This is crucial for emulator performance on your Linux droplet.
+*   `--volume ~/YOUR_ACTUAL_APK_FILENAME.apk:/mnt/apks/mounted_app.apk:ro`:
+    *   **`~/YOUR_ACTUAL_APK_FILENAME.apk`**: **YOU MUST REPLACE THIS.**
+        *   If you are logged in as `root` and your APK is named `checklist.apk` in the root user's home directory, this would be `/root/checklist.apk`.
+        *   If you are logged in as a user named `ubuntu` and your APK is named `mycoolapp.apk` in that user's home directory, this would be `/home/ubuntu/mycoolapp.apk`.
+        *   The `~` symbol is a shortcut for the current user's home directory.
+    *   `:/mnt/apks/mounted_app.apk:ro`: This part (the path inside the container) should remain the same.
+*   `--volume ~/agent_persistent_storage:/agent/apps`:
+    *   This mounts the `agent_persistent_storage` directory from the current user's home directory on the droplet to `/agent/apps` inside the container. This should be correct if you followed the `mkdir ~/agent_persistent_storage` step.
+*   `navmind-agent:latest`: This is the name of the Docker image you built on the droplet.
+*   `"/mnt/apks/mounted_app.apk"`: The path to the APK *inside* the container. This should remain the same.
+*   `"Create a Task to 'Buy Milk'"`: Your specific task description.
+*   `"Gemini"`: Your chosen model.
+*   `"AIzaSyAX5wUhomG8Ew7z5DWrHgauF-uqzTtIKoQ"`: Your provided Gemini API key.
+
+**Example if you're logged in as `root` and your APK is `/root/checklist.apk`:**
+
+```bash
+docker run --rm -it \
+    --device /dev/kvm \
+    --volume /root/checklist.apk:/mnt/apks/mounted_app.apk:ro \
+    --volume /root/agent_persistent_storage:/agent/apps \
+    navmind-agent:latest \
+    "/mnt/apks/mounted_app.apk" \
+    "Create a Task to 'Buy Milk'" \
+    "Gemini" \
+    "AIzaSyAX5wUhomG8Ew7z5DWrHgauF-uqzTtIKoQ"
+```
+
+**Before running, please double-check the path to your APK file on the droplet and substitute it correctly.**
