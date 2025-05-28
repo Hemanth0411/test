@@ -1,0 +1,50 @@
+python workflow_manager.py "checklist.apk" "Explore the app." `
+    --agent_model_choice "Gemini" `
+    --agent_api_key "your_api_key" `
+
+python -m scripts.self_explorer `
+     --app_name "YouTube" `
+     --package_name "com.google.android.youtube" `
+     --description "Open the YouTube app, search for 'AI Agent Videos', press enter to initiate the search, and then tap on the first video result to play it."
+
+
+python -m scripts.self_explorer `
+    --app_name "Settings" `
+    --package_name "com.android.settings" `
+    --description "Explore the settings application to understand its features and navigation."
+
+docker build -t navmind-agent .
+
+docker run --rm -it `
+    --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\checklist.apk:/mnt/apks/mounted_app.apk:ro" `
+    --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\agent_persistent_storage:/agent/apps" `
+    navmind-agent `
+    "/mnt/apks/mounted_app.apk" `
+    "Create a Task to 'Buy Milk'" `
+    "Gemini" `
+    "AIzaSyAX5wUhomG8Ew7z5DWrHgauF-uqzTtIKoQ"
+
+
+Breakdown of the docker run command parameters to customize for each run:
+
+1.         --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\YOUR_APK_NAME.apk:/mnt/apks/mounted_app.apk:ro"
+        YOUR_APK_NAME.apk: Change this to the actual filename of the APK you want to test for this specific run (e.g., checklist.apk, gallery.apk). This APK file must exist in your NavMind_Agent root directory (or you need to provide its full correct path).
+        The part :/mnt/apks/mounted_app.apk:ro should generally remain the same. This is where the APK will appear inside the container.
+
+2.         --volume "C:\Users\lonel\Desktop\Study\AI Agent for android\NavMind_Agent\agent_persistent_storage:/agent/apps"
+        This line should remain the same for all runs, as it always maps your persistent storage on the host to where the agent expects to write its app-specific data (/agent/apps) inside the container.
+
+3.         navmind-agent
+        This is the name of your Docker image. It should remain the same unless you tagged your image differently.
+
+4.         "/mnt/apks/mounted_app.apk"
+        This is the first argument to your docker-entrypoint.sh (and then to workflow_manager.py). It's the path inside the container to the mounted APK. This should remain the same as it matches the destination in the first --volume directive.
+
+5.         "Your task description for the app."
+        Customize this for each run. This is the specific task you want the agent to perform on YOUR_APK_NAME.apk.
+
+6.         "YourModelChoiceOrNone"
+        Customize this if needed. Examples: "OpenAI", "Gemini", "Qwen". If your config.yaml (inside the image) already specifies the model and you don't want to override it, use "None".
+
+7.         "YourApiKeyOrNone"
+        Customize this if needed. Provide your API key here if you want to override what's in config.yaml or if the key is required for the chosen model. If the key is in config.yaml or not needed, use "None". Be careful about pasting API keys directly into shared terminal histories.

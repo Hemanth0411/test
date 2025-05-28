@@ -1,0 +1,55 @@
+# .dockerignore
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and OS specific files
+.idea/
+.vscode/
+*.DS_Store
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Logs and output directories (these are runtime, not build time)
+apps/
+# If you have other output dirs, add them here
+
+# Docker specific files if you add more complex docker-compose setups later
+docker-compose.yml
+docker-compose.override.yml
+
+# Git specific
+.git/
+.gitignore
+.gitattributes
+
+# Test files if you have a separate test suite dir
+tests/
+
+# APKs - usually mounted at runtime, not part of the image itself
+# unless you have a specific base APK you always want in the image.
+# *.apk
+
+# Large data files not needed for running the agent's code
+*.zip
+*.tar.gz
+# *.txt files that are runtime outputs like error.txt, torun.txt
+error.txt
+torun.txt
+# Keep config.yaml, requirements.txt, README.md
