@@ -14,6 +14,13 @@ RUN apt-get update && \
     libgl1-mesa-glx \
     libpulse0 \
     libsdl2-2.0-0 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcursor1 \
+    libxrandr2 \
+    libxcomposite1 \
+    libxi6 \
+    libxtst6 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV ANDROID_SDK_ROOT="/opt/android-sdk" 
 ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/emulator"
