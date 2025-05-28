@@ -77,6 +77,7 @@ COPY workflow_manager.py .
 COPY apk_info.py .
 COPY install_apk.py .
 COPY check_package.py .
+COPY adb_controller.py
 
 COPY config.yaml .
 
